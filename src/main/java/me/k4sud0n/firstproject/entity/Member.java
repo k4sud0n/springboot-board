@@ -19,9 +19,9 @@ public class Member {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 }
