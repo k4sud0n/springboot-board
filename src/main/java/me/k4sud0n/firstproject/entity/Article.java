@@ -16,9 +16,11 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @Column
     private String title;
 
+    @Getter
     @Column
     private String content;
 }
