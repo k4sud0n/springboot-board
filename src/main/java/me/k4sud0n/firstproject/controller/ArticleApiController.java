@@ -1,13 +1,17 @@
 package me.k4sud0n.firstproject.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import me.k4sud0n.firstproject.dto.ArticleForm;
 import me.k4sud0n.firstproject.entity.Article;
 import me.k4sud0n.firstproject.repository.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 public class ArticleApiController {
     @Autowired
@@ -32,5 +36,33 @@ public class ArticleApiController {
     }
 
     // PATCH
+    @PatchMapping("/api/articles/{id}")
+    public ResponseEntity<Article> update(@PathVariable Long id, @RequestBody ArticleForm dto) {
+        Article article = dto.toEntity();
+        log.info("id: {}, article: {}", id, article);
+
+        Article target = articleRepository.findById(id).orElse(null);
+
+        if(target == null || id != article.getId()) {
+            log.info("잘못된 요청! id: {}, article: {}", id, article.toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        target.patch(article);
+        Article updated = articleRepository.save(target);
+        return ResponseEntity.status(HttpStatus.OK).body(updated);
+    }
+
     // DELETE
+    @DeleteMapping("/api/articles/{id}")
+    public ResponseEntity<Article> delete(@PathVariable Long id) {
+        Article target = articleRepository.findById(id).orElse(null);
+
+        if(target == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        articleRepository.delete(target);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
